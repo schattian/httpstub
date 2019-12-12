@@ -1,4 +1,4 @@
-package melitest
+package httpstub
 
 import (
 	"context"
