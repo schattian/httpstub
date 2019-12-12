@@ -20,18 +20,18 @@ func (s *Stubber) Serve(t *testing.T) (Close func()) {
 		return func() {}
 	}
 	sv := httptest.NewTLSServer(s.Router(t))
-	s.Client.SetClient(StubberClient(sv))
+	s.Client.SetClient(stubberClient(sv))
 	return sv.Close
 }
 
 func (s *Stubber) Router(t *testing.T) http.Handler {
 	t.Helper()
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		stub := s.stubByURL(req.URL.RawPath)
+		stub := s.stubByURL(req.URL.Path)
 		if stub == nil {
-			t.Fatalf("couldnt match stub for %s url", req.URL.RawPath)
+			t.Fatalf("couldnt match stub for %s url", req.URL.Path)
 		}
-		stub.intercept(t)
+		stub.intercept(t).ServeHTTP(res, req)
 	})
 }
 
@@ -44,7 +44,7 @@ func (s *Stubber) stubByURL(url string) *Stub {
 	return nil
 }
 
-func StubberClient(sv *httptest.Server) http.Client {
+func stubberClient(sv *httptest.Server) http.Client {
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		DialContext: func(_ context.Context, network, _ string) (net.Conn, error) {
