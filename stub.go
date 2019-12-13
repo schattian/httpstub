@@ -11,8 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+// Stub is any single request stub
 type Stub struct {
-	// URL is the URL to be intercepted by the stub
 	URL string
 
 	Status int
@@ -21,12 +21,11 @@ type Stub struct {
 	Config struct {
 		DontAssertReceive bool
 	}
-	WantBodyReceive   []byte
-	WantParamsReceive url.Values
-}
 
-type Client interface {
-	SetClient(http.Client)
+	Receive struct {
+		Body   []byte
+		Params url.Values
+	}
 }
 
 func (s *Stub) intercept(t *testing.T) http.Handler {
@@ -45,11 +44,11 @@ func (s *Stub) intercept(t *testing.T) http.Handler {
 
 func (s *Stub) assertReceive(t *testing.T, req *http.Request) {
 	t.Helper()
-	assertReceivedBody(t, req, s.WantBodyReceive)
-	if s.WantParamsReceive == nil {
-		s.WantParamsReceive = url.Values{}
+	assertReceivedBody(t, req, s.Receive.Body)
+	if s.Receive.Params == nil {
+		s.Receive.Params = url.Values{}
 	}
-	assertReceivedParams(t, req, s.WantParamsReceive)
+	assertReceivedParams(t, req, s.Receive.Params)
 }
 
 func assertReceivedBody(t *testing.T, req *http.Request, assertion []byte) {
