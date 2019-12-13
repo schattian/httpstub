@@ -12,6 +12,9 @@ import (
 type Stubber struct {
 	Stubs  []*Stub
 	Client Client
+	Config struct {
+		DontAssertUnstubbed bool
+	}
 }
 
 func (s *Stubber) Serve(t *testing.T) (Close func()) {
@@ -28,8 +31,10 @@ func (s *Stubber) Router(t *testing.T) http.Handler {
 	t.Helper()
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		stub := s.stubByURL(req.URL.Path)
-		if stub == nil {
-			t.Fatalf("couldnt match stub for %s url", req.URL.Path)
+		if !s.Config.DontAssertUnstubbed {
+			if stub == nil {
+				t.Fatalf("couldnt match stub for %s url", req.URL.Path)
+			}
 		}
 		stub.intercept(t).ServeHTTP(res, req)
 	})
