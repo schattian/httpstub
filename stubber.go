@@ -12,7 +12,7 @@ import (
 type Stubber struct {
 	Stubs  []*Stub
 	Client Client
-	Config *StubberConfig
+	Config StubberConfig
 }
 
 type StubberConfig struct {

@@ -18,8 +18,8 @@ type Stub struct {
 	Status int
 	Body   interface{}
 
-	Config  *StubConfig
-	Receive *Receive
+	Config  StubConfig
+	Receive Receive
 }
 
 type Receive struct {
