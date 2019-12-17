@@ -18,14 +18,17 @@ type Stub struct {
 	Status int
 	Body   interface{}
 
-	Config struct {
-		DontAssertReceive bool
-	}
+	Config  *StubConfig
+	Receive *Receive
+}
 
-	Receive struct {
-		Body   []byte
-		Params url.Values
-	}
+type Receive struct {
+	Body   []byte
+	Params url.Values
+}
+
+type StubConfig struct {
+	DontAssertReceive bool
 }
 
 func (s *Stub) intercept(t *testing.T) http.Handler {

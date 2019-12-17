@@ -12,9 +12,11 @@ import (
 type Stubber struct {
 	Stubs  []*Stub
 	Client Client
-	Config struct {
-		DontAssertUnstubbed bool
-	}
+	Config *StubberConfig
+}
+
+type StubberConfig struct {
+	DontAssertUnstubbed bool
 }
 
 func (s *Stubber) Serve(t *testing.T) (Close func()) {
